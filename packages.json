@@ -25,7 +25,7 @@
                 "google-noto-sans-sundanese-fonts",
                 "grub2-tools-extra",
                 "heif-pixbuf-loader",
-                "intel-vaapi-driver",
+                
                 "just",
                 "kernel-tools",
                 "libcamera",
@@ -46,7 +46,7 @@
                 "pamu2fcfg",
                 "pipewire-libs-extra",
                 "pipewire-plugin-libcamera",
-                "powerstat",
+                
                 "smartmontools",
                 "solaar-udev",
                 "squashfs-tools",
