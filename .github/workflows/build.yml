@@ -155,6 +155,7 @@ jobs:
           containerfiles: |
             ./Containerfile
           image: ${{ env.IMAGE_NAME }}
+          archs: amd64, arm64
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
