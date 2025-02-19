@@ -41,6 +41,11 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4.2.2
 
+      - name: Install qemu dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static
+
       - name: Get kernel version
         id: version
         shell: bash
@@ -150,6 +155,7 @@ jobs:
           containerfiles: |
             ./Containerfile
           image: ${{ env.IMAGE_NAME }}
+          archs: amd64, arm64
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
