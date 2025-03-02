@@ -26,12 +26,18 @@ rpm-ostree override replace \
   ocl-icd \
   || true
 
+
 curl -Lo /etc/yum.repos.d/_copr_ublue-os_staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${RELEASE}"/ublue-os-staging-fedora-"${RELEASE}".repo
+curl -Lo /etc/yum.repos.d/_copr_ublue-os_packages.repo https://copr.fedorainfracloud.org/coprs/ublue-os/packages/repo/fedora-"${RELEASE}"/ublue-os-packages-fedora-"${RELEASE}".repo
 # no aarch64 support for oversteer
 #curl -Lo /etc/yum.repos.d/_copr_kylegospo_oversteer.repo https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-"${RELEASE}"/kylegospo-oversteer-fedora-"${RELEASE}".repo
 
 rpm-ostree install \
-    /tmp/config-rpms/*.rpm \
+    ublue-os-just \
+    ublue-os-luks \
+    ublue-os-signing \
+    ublue-os-udev-rules \
+    ublue-os-update-services \
     /tmp/akmods-rpms/*.rpm \
     fedora-repos-archive
 
