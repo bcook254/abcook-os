@@ -17,8 +17,6 @@
                 "fuse",
                 "fzf",
                 "git-lfs",
-                "gnome-shell-extension-appindicator",
-                "gnome-shell-extension-dash-to-dock",
                 "google-noto-sans-balinese-fonts",
                 "google-noto-sans-cjk-fonts",
                 "google-noto-sans-javanese-fonts",
@@ -65,8 +63,19 @@
             "silverblue": [
                 "adw-gtk3-theme",
                 "gnome-epub-thumbnailer",
+                "gnome-shell-extension-appindicator",
+                "gnome-shell-extension-dash-to-dock",
                 "gnome-tweaks",
                 "gvfs-nfs"
+            ],
+            "hyprland": [
+                "sddm",
+                "sddm-themes",
+                "qt5-qtgraphicaleffects",
+                "qt5-qtquickcontrols2",
+                "qt5-qtsvg",
+                "kwallet",
+                "pam-kwallet"
             ]
         },
         "exclude": {

@@ -1,7 +1,7 @@
 ARG SOURCE_NS="${SOURCE_NS:-quay.io}"
 ARG SOURCE_ORG="${SOURCE_ORG:-fedora}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-fedora}"
-# Source variant can be null
+# Source variant can be empty
 ARG SOURCE_VARIANT="${SOURCE_VARIANT}"
 ARG IMAGE_NAME="${IMAGE_VARIANT:-base}"
 ARG IMAGE_VARIANT="${IMAGE_VARIANT:-main}"
