@@ -33,7 +33,6 @@ curl -Lo /etc/yum.repos.d/_copr_ublue-os_packages.repo https://copr.fedorainfrac
 #curl -Lo /etc/yum.repos.d/_copr_kylegospo_oversteer.repo https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-"${RELEASE}"/kylegospo-oversteer-fedora-"${RELEASE}".repo
 
 rpm-ostree install \
-    ublue-os-just \
     ublue-os-luks \
     ublue-os-signing \
     ublue-os-udev-rules \
