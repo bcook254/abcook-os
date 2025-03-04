@@ -33,7 +33,6 @@ curl -Lo /etc/yum.repos.d/_copr_ublue-os_packages.repo https://copr.fedorainfrac
 #curl -Lo /etc/yum.repos.d/_copr_kylegospo_oversteer.repo https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-"${RELEASE}"/kylegospo-oversteer-fedora-"${RELEASE}".repo
 
 rpm-ostree install \
-    ublue-os-just \
     ublue-os-luks \
     ublue-os-signing \
     ublue-os-udev-rules \
@@ -46,12 +45,13 @@ curl -Lo /etc/yum.repos.d/negativo17-fedora-multimedia.repo https://negativo17.o
 sed -i '0,/enabled=1/{s/enabled=1/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
 # use override to replace mesa and others with less crippled versions
+    #libva-intel-media-driver \
+
 rpm-ostree override replace \
   --experimental \
   --from repo='fedora-multimedia' \
     libheif \
     libva \
-    libva-intel-media-driver \
     mesa-dri-drivers \
     mesa-filesystem \
     mesa-libEGL \
@@ -92,12 +92,15 @@ fi
 
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
-GCM_VERSION=2.6.1
-mkdir /tmp/gcm
-curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_${ARCH_ALT}.${GCM_VERSION}.tar.gz
-tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
-mkdir /usr/lib/gcm
-cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
+# no aarch64 support for gcm
+if [[ "$ARCH" == "x86_64" ]]; then
+    GCM_VERSION=2.6.1
+    mkdir /tmp/gcm
+    curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_amd64.${GCM_VERSION}.tar.gz
+    tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
+    mkdir /usr/lib/gcm
+    cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
+fi
 
 # Install extra fonts
 # MesloLGS NF (used for p10k)
