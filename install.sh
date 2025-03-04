@@ -92,12 +92,15 @@ fi
 
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
-GCM_VERSION=2.6.1
-mkdir /tmp/gcm
-curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_${ARCH_ALT}.${GCM_VERSION}.tar.gz
-tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
-mkdir /usr/lib/gcm
-cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
+# no aarch64 support for gcm
+if [[ "$ARCH" == "x86_64" ]]; then
+    GCM_VERSION=2.6.1
+    mkdir /tmp/gcm
+    curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_amd64.${GCM_VERSION}.tar.gz
+    tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
+    mkdir /usr/lib/gcm
+    cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
+fi
 
 # Install extra fonts
 # MesloLGS NF (used for p10k)
