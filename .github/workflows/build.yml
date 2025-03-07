@@ -31,9 +31,6 @@ jobs:
         major_version: [41]
         image_name: [silverblue]
         image_variant: [main, surface]
-        include:
-          - major_version: 41
-            is_latest_version: true
     env:
       IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.image_variant }}
     steps:
@@ -87,15 +84,8 @@ jobs:
           SHA_SHORT="${GITHUB_SHA::7}"
           COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}-${VARIANT}")
           COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}-${VARIANT}")
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
-              COMMIT_TAGS+=("pr-${{ github.event.number }}")
-              COMMIT_TAGS+=("${SHA_SHORT}")
-          fi
 
           BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
-              BUILD_TAGS+=("latest")
-          fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Generated the following commit tags: "
