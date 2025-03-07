@@ -25,7 +25,6 @@
                 "heif-pixbuf-loader",
                 "intel-vaapi-driver",
                 "just",
-                "kernel-tools",
                 "libcamera",
                 "libcamera-tools",
                 "libcamera-gstreamer",
