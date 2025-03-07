@@ -19,8 +19,8 @@ concurrency:
 
 jobs:
   build_ublue:
-    name: Build and push image
-    runs-on: ubuntu-24.04
+    name: Build and push image (${{ matrix.image_name}},${{ matrix.major_version }},${{ contains(matrix.os,'arm') && 'aarch64' || 'x86_64' }},${{ matrix.image_variant}})
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
       packages: write
@@ -28,15 +28,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [ ubuntu-24.04, ubuntu-24.04-arm ]
         major_version: [41]
         image_name: [silverblue]
         image_variant: [main, surface]
+        exclude:
+            # no aarch64 variants for surface devices
+          - os: ubuntu-24.04-arm
+            image_variant: surface
     env:
       IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.image_variant }}
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4.2.2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo buildah
 
       - name: Get kernel version
         id: version
@@ -73,6 +83,8 @@ jobs:
         id: generate-tags
         shell: bash
         run: |
+          ARCH="$(uname -m)"
+
           # Generate a timestamp for creating an image version history
           TIMESTAMP="$(date +%Y%m%d)"
 
@@ -82,10 +94,10 @@ jobs:
           # Have tags for tracking builds during pull request
           COMMIT_TAGS=()
           SHA_SHORT="${GITHUB_SHA::7}"
-          COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}-${VARIANT}")
-          COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}-${VARIANT}")
+          COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}-${ARCH}")
+          COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}-${ARCH}")
 
-          BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
+          BUILD_TAGS=("${MAJOR_VERSION}-${ARCH}" "${MAJOR_VERSION}-${ARCH}-${TIMESTAMP}")
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Generated the following commit tags: "
@@ -125,7 +137,6 @@ jobs:
           images: |
             ${{ env.IMAGE_NAME }}
           labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
             org.opencontainers.image.description=abcook-os ${{ matrix.image_name }}${{ contains(matrix.image_variant,'surface') && ' for Surface devices' || ''}}${{ contains(matrix.image_variant,'nvidia') && ' with Nvidia drivers' || ''}}.
             ostree.linux=${{ steps.version.outputs.KERNEL_VERSION }}
