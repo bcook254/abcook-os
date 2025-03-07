@@ -7,7 +7,7 @@ ln -sf /usr/bin/step-cli /etc/alternatives/step && ln -sf /etc/alternatives/step
 
 ln -sf /usr/lib/gcm/git-credential-manager /usr/bin/git-credential-manager
 
-# rbw completions must be manually generated (tar: completion: Cannot change mode to rwxr-xr-x: Operation not permitted)
+# rbw completions must be manually generated
 /usr/bin/rbw gen-completions bash > /usr/share/bash-completion/completions/rbw
 /usr/bin/rbw gen-completions zsh > /usr/share/zsh/site-functions/_rbw
 

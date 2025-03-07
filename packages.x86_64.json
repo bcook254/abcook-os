@@ -1,0 +1,21 @@
+{
+    "all": {
+        "include": {
+            "all": [
+                "intel-vaapi-driver",
+                "powerstat"
+            ]
+        },
+        "exclude": {
+            "all": []
+        }
+    },
+    "41": {
+        "include": {
+            "all": []
+        },
+        "exclude": {
+            "all": []
+        }
+    }
+}

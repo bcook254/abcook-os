@@ -29,8 +29,6 @@ rpm-ostree override replace \
 
 curl -Lo /etc/yum.repos.d/_copr_ublue-os_staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${RELEASE}"/ublue-os-staging-fedora-"${RELEASE}".repo
 curl -Lo /etc/yum.repos.d/_copr_ublue-os_packages.repo https://copr.fedorainfracloud.org/coprs/ublue-os/packages/repo/fedora-"${RELEASE}"/ublue-os-packages-fedora-"${RELEASE}".repo
-# no aarch64 support for oversteer
-#curl -Lo /etc/yum.repos.d/_copr_kylegospo_oversteer.repo https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-"${RELEASE}"/kylegospo-oversteer-fedora-"${RELEASE}".repo
 
 rpm-ostree install \
     ublue-os-just \
@@ -46,20 +44,25 @@ curl -Lo /etc/yum.repos.d/negativo17-fedora-multimedia.repo https://negativo17.o
 sed -i '0,/enabled=1/{s/enabled=1/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
 # use override to replace mesa and others with less crippled versions
+fedora_multimedia_packages=(
+    'libheif'
+    'libva'
+    'mesa-dri-drivers'
+    'mesa-filesystem'
+    'mesa-libEGL'
+    'mesa-libGL'
+    'mesa-libgbm'
+    'mesa-libxatracker'
+    'mesa-va-drivers'
+    'mesa-vulkan-drivers'
+)
+if [[ "$ARCH" == "x86_64" ]]; then
+    fedora_multimedia_packages+=( 'libva-intel-media-driver' )
+fi
+
 rpm-ostree override replace \
-  --experimental \
-  --from repo='fedora-multimedia' \
-    libheif \
-    libva \
-    libva-intel-media-driver \
-    mesa-dri-drivers \
-    mesa-filesystem \
-    mesa-libEGL \
-    mesa-libGL \
-    mesa-libgbm \
-    mesa-libxatracker \
-    mesa-va-drivers \
-    mesa-vulkan-drivers
+    --experimental \
+    --from repo='fedora-multimedia' ${fedora_multimedia_packages[@]}
 
 # Disable DKMS support in gnome-software
 if [[ "$FEDORA_MAJOR_VERSION" -ge "41" && "$IMAGE_NAME" == "silverblue" ]]; then
@@ -72,32 +75,24 @@ if [[ "$FEDORA_MAJOR_VERSION" -ge "41" && "$IMAGE_NAME" == "silverblue" ]]; then
 fi
 
 # Setup packages
-/ctx/packages.sh /ctx/packages.json
+/ctx/packages.sh /ctx/packages.json /ctx/packages.${ARCH}.json
 
 # Install packages directly from GitHub
 /ctx/github-release-install.sh --repository=sigstore/cosign --asset-filter=${ARCH}
 /ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=${ARCH}
 /ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=${ARCH}
 
-# Install rbw
-# https://github.com/doy/rbw
-# no aarch64 support for rbw
-if [[ "$ARCH" == "x86_64" ]]; then
-    RBW_VERSION=1.13.2
-    mkdir /tmp/rbw
-    curl -sLo /tmp/rbw/rbw_linux.tar.gz https://github.com/doy/rbw/releases/download/${RBW_VERSION}/rbw_${RBW_VERSION}_linux_amd64.tar.gz
-    tar -C /tmp/rbw -xf /tmp/rbw/rbw_linux.tar.gz rbw rbw-agent
-    cp /tmp/rbw/rbw /tmp/rbw/rbw-agent /usr/bin
-fi
-
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
-GCM_VERSION=2.6.1
-mkdir /tmp/gcm
-curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_${ARCH_ALT}.${GCM_VERSION}.tar.gz
-tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
-mkdir /usr/lib/gcm
-cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
+# no aarch64 support for gcm
+if [[ "$ARCH" == "x86_64" ]]; then
+    GCM_VERSION=2.6.1
+    mkdir /tmp/gcm
+    curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_${ARCH_ALT}.${GCM_VERSION}.tar.gz
+    tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
+    mkdir /usr/lib/gcm
+    cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
+fi
 
 # Install extra fonts
 # MesloLGS NF (used for p10k)
