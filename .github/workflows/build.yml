@@ -213,14 +213,116 @@ jobs:
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
 
-  check:
+  build_manifests:
+    name: Build and push manifests
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: [build_ublue]
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build manifests
+        id: build_manifests
+        shell: bash
+        run: |
+          python3 <<EOF
+
+          import itertools as it
+          import subprocess
+          import yaml
+
+          # image matrix
+          images_def = """
+          image_name:
+            - silverblue
+          image_variant:
+            - main
+            - surface
+          major_version:
+            - 41
+          image_arch:
+            - x86_64
+            - aarch64
+          """
+          images_dict = yaml.safe_load(images_def)
+
+          # image exclusion matrix
+          image_exclusions_def = """
+          - image_arch: aarch64
+            image_variant: surface
+          """
+          image_exclusions_dict = yaml.safe_load(image_exclusions_def)
+
+          # got all image keys and sort
+          allNames = sorted(images_dict)
+          # create all possible combinations
+          combinations = it.product(*(images_dict[Name] for Name in allNames))
+          all_images = [dict(zip(allNames, d)) for d in list(combinations)]
+
+          # remove all images that match any exclusion pattern
+          final_images = []
+          for image in all_images:
+            if not any(all(key in image and image[key] == value for key, value in exclusion.items()) for exclusion in image_exclusions_dict):
+              final_images.append(image)
+
+          # manifest inclusion matrix
+          manifests_def = """
+          image_name:
+            - silverblue
+          image_variant:
+            - main
+            - surface
+          major_version:
+            - 41
+          """
+          manifests_dict = yaml.safe_load(manifests_def)
+
+          # got all manifest keys and sort
+          allNames = sorted(manifests_dict)
+          # create all possible combinations
+          combinations = it.product(*(manifests_dict[Name] for Name in allNames))
+          all_manifests = [dict(zip(allNames, d)) for d in list(combinations)]
+
+          # for each manifest, find all images that match
+          final_manifests = {}
+          for manifest in all_manifests:
+            manifest_images = []
+            for image in final_images:
+              if all(key in image and image[key] == value for key, value in manifest.items()):
+                manifest_images.append(image)
+
+            manifest_final = f'{manifest["image_name"]}-{manifest["image_variant"]}:{manifest["major_version"]}'
+            manifest_images_final = list(map(lambda i: f'{i["image_name"]}-{i["image_variant"]}:{i["major_version"]}-{i["image_arch"]}', manifest_images))
+            final_manifests[manifest_final] = manifest_images_final
+
+            # add case for 'latest' tag
+            if str(manifest["major_version"]) == "41":
+              manifest_final = f'{manifest["image_name"]}-{manifest["image_variant"]}:latest'
+              final_manifests[manifest_final] = manifest_images_final
+
+          for manifest in final_manifests:
+            # create the manifest and push
+            manifest_result = subprocess.run(['buildah', 'manifest', 'create', f'localhost/{manifest}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+            for image in final_manifests[manifest]:
+              image_result = subprocess.run(['buildah', 'manifest', 'add', f'localhost/{manifest}', f'ghcr.io/bcook254/{image}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+
+            print(f'Push docker://ghcr.io/bcook254/{manifest}')
+            push_result = subprocess.run(['buildah', 'manifest', 'push', '--rm', f'localhost/{manifest}', f'docker://ghcr.io/bcook254/{manifest}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+          EOF
+
+  checks:
     name: Check all builds successful
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
-    needs: [build_ublue]
+    needs: [build_ublue, build_manifests]
     steps:
       - name: Exit on failure
-        if: ${{ needs.build_ublue.result == 'failure' }}
+        if: ${{ needs.build_ublue.result == 'failure' || needs.build_manifests.result == 'failure' }}
         shell: bash
         run: exit 1
       - name: Exit
