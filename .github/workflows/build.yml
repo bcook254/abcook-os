@@ -216,6 +216,10 @@ jobs:
   build_manifests:
     name: Build and push manifests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     if: ${{ github.event_name != 'pull_request' }}
     needs: [build_ublue]
     steps:
