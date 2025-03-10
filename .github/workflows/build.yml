@@ -29,7 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-24.04, ubuntu-24.04-arm ]
-        major_version: [41]
+        major_version: [41, 42]
         image_name: [silverblue]
         image_variant: [main, surface]
         exclude:
@@ -249,6 +249,7 @@ jobs:
             - surface
           major_version:
             - 41
+            - 42
           image_arch:
             - x86_64
             - aarch64
@@ -283,6 +284,7 @@ jobs:
             - surface
           major_version:
             - 41
+            - 42
           """
           manifests_dict = yaml.safe_load(manifests_def)
 
