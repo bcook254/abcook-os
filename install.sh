@@ -36,7 +36,6 @@ rpm-ostree install \
     ublue-os-signing \
     ublue-os-udev-rules \
     ublue-os-update-services \
-    /tmp/akmods-rpms/*.rpm \
     fedora-repos-archive
 
 # use negativo17 for 3rd party packages with higher priority than default
