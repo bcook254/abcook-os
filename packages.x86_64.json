@@ -17,5 +17,13 @@
         "exclude": {
             "all": []
         }
+    },
+    "42": {
+        "include": {
+            "all": []
+        },
+        "exclude": {
+            "all": []
+        }
     }
 }
