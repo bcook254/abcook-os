@@ -2,6 +2,7 @@
 
 # A script to install an RPM from the latest Github release for a project.
 # Maintained by the ublue-os project at https://github.com/ublue-os/main/blob/main/github-release-install.sh
+# Maintained by bcook254 at https://github.com/bcook254/abcook-os/main/blob/main/github-release-install.sh
 #
 #   Copyright 2024 Universal Blue (https://universal-blue.org)
 #
@@ -16,18 +17,32 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-#
-# REPO is the pair of URL components for organization/projectName in Github URL
-# example: https://github.com/wez/wezterm/releases
-#   REPO would be "wez/wezterm"
-#
-# ASSET_FILTER is used to select the specific RPM. Typically this can just be the arch
-#   such as 'x86_64' but sometimes a specific filter is required when multiple match.
-# example: wezterm builds RPMs for different distros so we must be more specific.
-#   ASSET_FILTER of "fedora37.x86_64" gets the x86_64 RPM build for fedora37
 
 usage() {
-  echo "TODO"
+  cat <<EOF
+Usage: github-release-install.sh --repository <org/repo> --asset-filter <filter> [options]
+
+Installs an RPM package from the latest GitHub release of a specified repository.
+
+Required Arguments:
+  --repository <org/repo>       The GitHub repository in 'organization/project' format.
+  --asset-filter <filter>       A regex string to filter the RPM asset (e.g., 'x86_64' or 'f41\.aarch64').
+
+Optional Arguments:
+  --tag-override <tag>          A specific release tag (default: latest).
+  --download-only               Download the RPM without installing it.
+  --output-dir <directory>      Specify the output directory for downloaded RPMs (default: current directory).
+  --output-file <filename>      Rename the downloaded RPM file.
+  --help, -h                    Show this help message and exit.
+
+Example Usage:
+  github-release-install.sh --repository wez/wezterm --asset-filter "fedora37\.x86_64"
+  github-release-install.sh --repository twpayne/chezmoi --asset-filter aarch64 --download-only --output-dir /tmp
+
+Maintained by:
+  ublue-os: https://github.com/ublue-os/main/blob/main/github-release-install.sh
+  bcook254: https://github.com/bcook254/abcook-os/main/blob/main/github-release-install.sh
+EOF
 }
 
 while [ $# -gt 0 ]; do
