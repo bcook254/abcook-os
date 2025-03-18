@@ -59,7 +59,6 @@
             ],
             "silverblue": [
                 "adw-gtk3-theme",
-                "gnome-epub-thumbnailer",
                 "gnome-shell-extension-appindicator",
                 "gnome-shell-extension-dash-to-dock",
                 "gnome-tweaks",
