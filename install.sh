@@ -94,6 +94,23 @@ if [[ "$ARCH" == "x86_64" ]]; then
     cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
 fi
 
+# Install eza
+# https://github.com/eza-community/eza
+# official package falls behind quickly with rapid development and dep changes
+EZA_VERSION="0.20.24"
+EZA_TMPDIR=$(mktemp --directory /tmp/eza-XXXXXXXX)
+curl -Lo ${EZA_TMPDIR}/eza.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_${ARCH}-unknown-linux-gnu.tar.gz
+curl -Lo ${EZA_TMPDIR}/man.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/man-${EZA_VERSION}.tar.gz
+curl -Lo ${EZA_TMPDIR}/completions.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/completions-${EZA_VERSION}.tar.gz
+tar -C ${EZA_TMPDIR} -xvf ${EZA_TMPDIR}/eza.tar.gz
+tar -C ${EZA_TMPDIR} -xvf ${EZA_TMPDIR}/man.tar.gz
+tar -C ${EZA_TMPDIR} -xvf ${EZA_TMPDIR}/completions.tar.gz
+cp ${EZA_TMPDIR}/eza /usr/bin/
+cp ${EZA_TMPDIR}/target/man-${EZA_VERSION}/*.1 /usr/share/man/man1/
+cp ${EZA_TMPDIR}/target/man-${EZA_VERSION}/*.5 /usr/share/man/man5/
+cp ${EZA_TMPDIR}/target/completions-${EZA_VERSION}/eza /usr/share/bash-completion/completions/
+cp ${EZA_TMPDIR}/target/completions-${EZA_VERSION}/_eza /usr/share/zsh/site-functions/
+
 # Install extra fonts
 # MesloLGS NF (used for p10k)
 mkdir -p /usr/share/fonts/meslolgs-nf
