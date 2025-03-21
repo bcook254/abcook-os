@@ -29,13 +29,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-24.04, ubuntu-24.04-arm ]
-        major_version: [41]
+        major_version: [41, 42]
         image_name: [silverblue]
         image_variant: [main, surface]
         exclude:
             # no aarch64 variants for surface devices
           - os: ubuntu-24.04-arm
             image_variant: surface
+          - image_variant: surface
+            major_version: 42
     env:
       IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.image_variant }}
     steps:
@@ -249,6 +251,7 @@ jobs:
             - surface
           major_version:
             - 41
+            - 42
           image_arch:
             - x86_64
             - aarch64
@@ -259,6 +262,8 @@ jobs:
           image_exclusions_def = """
           - image_arch: aarch64
             image_variant: surface
+          - image_variant: surface
+            major_version: 42
           """
           image_exclusions_dict = yaml.safe_load(image_exclusions_def)
 
@@ -283,6 +288,7 @@ jobs:
             - surface
           major_version:
             - 41
+            - 42
           """
           manifests_dict = yaml.safe_load(manifests_def)
 
@@ -310,13 +316,14 @@ jobs:
               final_manifests[manifest_final] = manifest_images_final
 
           for manifest in final_manifests:
-            # create the manifest and push
-            manifest_result = subprocess.run(['buildah', 'manifest', 'create', f'localhost/{manifest}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
-            for image in final_manifests[manifest]:
-              image_result = subprocess.run(['buildah', 'manifest', 'add', f'localhost/{manifest}', f'ghcr.io/bcook254/{image}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+            if len(final_manifests[manifest]) > 0:
+              # create the manifest and push
+              manifest_result = subprocess.run(['buildah', 'manifest', 'create', f'localhost/{manifest}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+              for image in final_manifests[manifest]:
+                image_result = subprocess.run(['buildah', 'manifest', 'add', f'localhost/{manifest}', f'ghcr.io/bcook254/{image}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
 
-            print(f'Push docker://ghcr.io/bcook254/{manifest}')
-            push_result = subprocess.run(['buildah', 'manifest', 'push', '--rm', f'localhost/{manifest}', f'docker://ghcr.io/bcook254/{manifest}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+              print(f'Push docker://ghcr.io/bcook254/{manifest}')
+              push_result = subprocess.run(['buildah', 'manifest', 'push', '--rm', f'localhost/{manifest}', f'docker://ghcr.io/bcook254/{manifest}'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
           EOF
 
   checks:

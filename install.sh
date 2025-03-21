@@ -36,7 +36,6 @@ rpm-ostree install \
     ublue-os-signing \
     ublue-os-udev-rules \
     ublue-os-update-services \
-    /tmp/akmods-rpms/*.rpm \
     fedora-repos-archive
 
 # use negativo17 for 3rd party packages with higher priority than default
@@ -65,7 +64,7 @@ rpm-ostree override replace \
     --from repo='fedora-multimedia' ${fedora_multimedia_packages[@]}
 
 # Disable DKMS support in gnome-software
-if [[ "$FEDORA_MAJOR_VERSION" -ge "41" && "$IMAGE_NAME" == "silverblue" ]]; then
+if [[ "$IMAGE_NAME" == "silverblue" ]]; then
     rpm-ostree override remove \
         gnome-software-rpm-ostree
     rpm-ostree override replace \
