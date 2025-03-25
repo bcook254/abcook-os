@@ -22,8 +22,5 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /ctx/pre-install.sh && \
     /ctx/install.sh && \
     /ctx/post-install.sh && \
-    # Cleanup everything we don't need
     /ctx/cleanup.sh && \
-    ostree container commit && \
-    mkdir -p /var/tmp && \
-    chmod -R 1777 /var/tmp
+    ostree container commit
