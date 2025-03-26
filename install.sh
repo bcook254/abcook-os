@@ -36,7 +36,6 @@ rpm-ostree install \
     ublue-os-signing \
     ublue-os-udev-rules \
     ublue-os-update-services \
-    /tmp/akmods-rpms/*.rpm \
     fedora-repos-archive
 
 # use negativo17 for 3rd party packages with higher priority than default
@@ -65,7 +64,7 @@ rpm-ostree override replace \
     --from repo='fedora-multimedia' ${fedora_multimedia_packages[@]}
 
 # Disable DKMS support in gnome-software
-if [[ "$FEDORA_MAJOR_VERSION" -ge "41" && "$IMAGE_NAME" == "silverblue" ]]; then
+if [[ "$IMAGE_NAME" == "silverblue" ]]; then
     rpm-ostree override remove \
         gnome-software-rpm-ostree
     rpm-ostree override replace \
@@ -74,13 +73,16 @@ if [[ "$FEDORA_MAJOR_VERSION" -ge "41" && "$IMAGE_NAME" == "silverblue" ]]; then
         gnome-software
 fi
 
-# Setup packages
+# Install packages
 /ctx/packages.sh /ctx/packages.json /ctx/packages.${ARCH}.json
 
 # Install packages directly from GitHub
-/ctx/github-release-install.sh --repository=sigstore/cosign --asset-filter=${ARCH}
-/ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=${ARCH}
-/ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=${ARCH}
+/ctx/github-release-install.sh --repository=sigstore/cosign --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+/ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+/ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+
+rpm-ostree install \
+    /tmp/github-rpms/*.rpm
 
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
@@ -120,14 +122,9 @@ curl --output-dir /usr/share/fonts/meslolgs-nf -sLo "MesloLGS-NF-Italic.ttf" htt
 curl --output-dir /usr/share/fonts/meslolgs-nf -sLo "MesloLGS-NF-Bold-Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 fc-cache --system-only --really-force --verbose
 
-# copy any shared sys files
-if [[ -d /ctx/"${IMAGE_VARIANT}"/system_files/shared ]]; then
-    rsync -rvK /ctx/"${IMAGE_VARIANT}"/system_files/shared/ /
-fi
-
-# copy any spin specific files, eg silverblue
-if [[ -d "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}" ]]; then
-    rsync -rvK "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}"/ /
+# run any install scripts for image variants
+if [ -f "/ctx/${IMAGE_VARIANT}/install.sh" ]; then
+    "/ctx/${IMAGE_VARIANT}/install.sh"
 fi
 
 # install any packages from packages.json

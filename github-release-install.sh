@@ -29,8 +29,9 @@ Required Arguments:
   --asset-filter <filter>       A regex string to filter the RPM asset (e.g., 'x86_64' or 'f41\.aarch64').
 
 Optional Arguments:
-  --tag-override <tag>          A specific release tag (default: latest).
+  --release-tag <tag>           A specific release tag (default: latest).
   --download-only               Download the RPM without installing it.
+  --dry-run                     Only print the selected asset url to stdout.
   --output-dir <directory>      Specify the output directory for downloaded RPMs (default: current directory).
   --output-file <filename>      Rename the downloaded RPM file.
   --help, -h                    Show this help message and exit.
@@ -55,12 +56,15 @@ while [ $# -gt 0 ]; do
       if [[ "$1" != *=* ]]; then shift; fi
       REPO="${1#*=}"
       ;;
-    --tag-override*)
+    --release-tag*)
       if [[ "$1" != *=* ]]; then shift; fi
       TAG="tags/${1#*=}"
       ;;
     --download-only)
       DOWNLOAD_ONLY="true"
+      ;;
+    --dry-run)
+      DRY_RUN="true"
       ;;
     --output-dir*)
       if [[ "$1" != *=* ]]; then shift; fi
@@ -117,7 +121,9 @@ if [ "${#RPM_URLS[@]}" -eq 0 ]; then
 fi
 
 # WARNING: in case of multiple matches, this only downloads/installs the first matched release
-if [ ! -z ${DOWNLOAD_ONLY+x} ]; then
+if [ ! -z ${DRY_RUN+x} ]; then
+  echo "${RPM_URLS}"
+elif [ ! -z ${DOWNLOAD_ONLY+x} ]; then
   download_args=(
     '--fail'
     '--retry' '5'
