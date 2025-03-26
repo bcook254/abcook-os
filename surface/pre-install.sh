@@ -29,11 +29,6 @@ rpm-ostree override replace \
     --remove kernel-modules-extra \
     --remove libwacom \
     --remove libwacom-data \
-    /tmp/surface-rpms/kernel-surface-"${KERNEL_VERSION}".rpm \
-    /tmp/surface-rpms/kernel-surface-core-"${KERNEL_VERSION}".rpm \
-    /tmp/surface-rpms/kernel-surface-modules-"${KERNEL_VERSION}".rpm \
-    /tmp/surface-rpms/kernel-surface-modules-core-"${KERNEL_VERSION}".rpm \
-    /tmp/surface-rpms/kernel-surface-modules-extra-"${KERNEL_VERSION}".rpm \
-    /tmp/surface-rpms/kernel-surface-default-watchdog-"${KERNEL_VERSION}".rpm \
+    /tmp/surface-rpms/kernel-surface*.rpm \
     /tmp/surface-rpms/libwacom-surface*.rpm \
     /tmp/surface-rpms/iptsd*.rpm

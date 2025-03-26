@@ -73,13 +73,16 @@ if [[ "$IMAGE_NAME" == "silverblue" ]]; then
         gnome-software
 fi
 
-# Setup packages
+# Install packages
 /ctx/packages.sh /ctx/packages.json /ctx/packages.${ARCH}.json
 
 # Install packages directly from GitHub
-/ctx/github-release-install.sh --repository=sigstore/cosign --asset-filter=${ARCH}
-/ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=${ARCH}
-/ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=${ARCH}
+/ctx/github-release-install.sh --repository=sigstore/cosign --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+/ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+/ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+
+rpm-ostree install \
+    /tmp/github-rpms/*.rpm
 
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
