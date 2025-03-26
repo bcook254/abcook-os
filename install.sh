@@ -119,14 +119,9 @@ curl --output-dir /usr/share/fonts/meslolgs-nf -sLo "MesloLGS-NF-Italic.ttf" htt
 curl --output-dir /usr/share/fonts/meslolgs-nf -sLo "MesloLGS-NF-Bold-Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 fc-cache --system-only --really-force --verbose
 
-# copy any shared sys files
-if [[ -d /ctx/"${IMAGE_VARIANT}"/system_files/shared ]]; then
-    rsync -rvK /ctx/"${IMAGE_VARIANT}"/system_files/shared/ /
-fi
-
-# copy any spin specific files, eg silverblue
-if [[ -d "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}" ]]; then
-    rsync -rvK "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}"/ /
+# run any install scripts for image variants
+if [ -f "/ctx/${IMAGE_VARIANT}/install.sh" ]; then
+    "/ctx/${IMAGE_VARIANT}/install.sh"
 fi
 
 # install any packages from packages.json
