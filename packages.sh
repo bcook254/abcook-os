@@ -5,12 +5,12 @@ set -oeux pipefail
 PACKAGE_MANIFESTS="$@"
 
 # build list of all packages requested for inclusion
-INCLUDED_PACKAGES=($(sort -du <<<"$(jq -r "[(.all.include | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[]), \
-                             (select(.\"$FEDORA_MAJOR_VERSION\" != null).\"$FEDORA_MAJOR_VERSION\".include | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[])]" \
+INCLUDED_PACKAGES=($(sort -du <<<"$(jq -r "(.all.include | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[]), \
+                             (select(.\"$FEDORA_MAJOR_VERSION\" != null).\"$FEDORA_MAJOR_VERSION\".include | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[])" \
                              $PACKAGE_MANIFESTS)" | tr '\n' ' '))
 # build list of all packages requested for exclusion
-EXCLUDED_PACKAGES=($(sort -du <<<"$(jq -r "[(.all.exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[]), \
-                             (select(.\"$FEDORA_MAJOR_VERSION\" != null).\"$FEDORA_MAJOR_VERSION\".exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[])]" \
+EXCLUDED_PACKAGES=($(sort -du <<<"$(jq -r "(.all.exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[]), \
+                             (select(.\"$FEDORA_MAJOR_VERSION\" != null).\"$FEDORA_MAJOR_VERSION\".exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[])" \
                              $PACKAGE_MANIFESTS)" | tr '\n' ' '))
 
 # ensure exclusion list only contains packages already present on image
@@ -39,8 +39,8 @@ fi
 
 # check if any excluded packages are still present
 # (this can happen if an included package pulls in a dependency)
-EXCLUDED_PACKAGES=($(sort -du <<<"$(jq -r "[(.all.exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[]), \
-                             (select(.\"$FEDORA_MAJOR_VERSION\" != null).\"$FEDORA_MAJOR_VERSION\".exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[])]" \
+EXCLUDED_PACKAGES=($(sort -du <<<"$(jq -r "(.all.exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[]), \
+                             (select(.\"$FEDORA_MAJOR_VERSION\" != null).\"$FEDORA_MAJOR_VERSION\".exclude | (.all, select(.\"$IMAGE_NAME\" != null).\"$IMAGE_NAME\")[])" \
                              $PACKAGE_MANIFESTS)" | tr '\n' ' '))
 
 if [[ "${#EXCLUDED_PACKAGES[@]}" -gt 0 ]]; then
