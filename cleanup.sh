@@ -6,6 +6,7 @@ shopt -s extglob
 # Cleanup
 # Remove tmp files and everything in dirs that make bootc unhappy
 rm -rf /tmp/* || true
+rm -rf /usr/etc
 rm -rf /boot && mkdir /boot
 find /var/lib /var/cache -maxdepth 1 -mindepth 1 ! -wholename /var/lib/alternatives ! -wholename /var/cache/rpm-ostree -type d -exec rm -rv {} +
 find /var -maxdepth 1 -mindepth 1 ! -wholename /var/lib ! -wholename /var/cache -type d -exec rm -rv {} +
