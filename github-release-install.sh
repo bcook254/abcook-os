@@ -29,8 +29,9 @@ Required Arguments:
   --asset-filter <filter>       A regex string to filter the RPM asset (e.g., 'x86_64' or 'f41\.aarch64').
 
 Optional Arguments:
-  --tag-override <tag>          A specific release tag (default: latest).
+  --release-tag <tag>           A specific release tag (default: latest).
   --download-only               Download the RPM without installing it.
+  --dry-run                     Only print the selected asset url to stdout.
   --output-dir <directory>      Specify the output directory for downloaded RPMs (default: current directory).
   --output-file <filename>      Rename the downloaded RPM file.
   --help, -h                    Show this help message and exit.
@@ -55,12 +56,15 @@ while [ $# -gt 0 ]; do
       if [[ "$1" != *=* ]]; then shift; fi
       REPO="${1#*=}"
       ;;
-    --tag-override*)
+    --release-tag*)
       if [[ "$1" != *=* ]]; then shift; fi
       TAG="tags/${1#*=}"
       ;;
     --download-only)
       DOWNLOAD_ONLY="true"
+      ;;
+    --dry-run)
+      DRY_RUN="true"
       ;;
     --output-dir*)
       if [[ "$1" != *=* ]]; then shift; fi
@@ -105,8 +109,8 @@ API="https://api.github.com/repos/${REPO}/releases/${TAG}"
 if ! curl --fail --retry 5 --retry-delay 5 --retry-all-errors -sL ${API} -o ${API_JSON}; then
   exit 3
 fi
-RPM_URLS=($(cat ${API_JSON} \
-  | jq \
+RPM_URLS=($(cat ${API_JSON} |
+  jq \
     -r \
     --arg asset_filter "${ASSET_FILTER}" \
     '.assets | sort_by(.created_at) | reverse | .[] | select(.name|test($asset_filter)) | select (.name|test("rpm$")) | .browser_download_url'))
@@ -117,7 +121,9 @@ if [ "${#RPM_URLS[@]}" -eq 0 ]; then
 fi
 
 # WARNING: in case of multiple matches, this only downloads/installs the first matched release
-if [ ! -z ${DOWNLOAD_ONLY+x} ]; then
+if [ ! -z ${DRY_RUN+x} ]; then
+  echo "${RPM_URLS}"
+elif [ ! -z ${DOWNLOAD_ONLY+x} ]; then
   download_args=(
     '--fail'
     '--retry' '5'
@@ -136,6 +142,6 @@ if [ ! -z ${DOWNLOAD_ONLY+x} ]; then
 
   curl ${download_args[@]} "${RPM_URLS}"
 else
-  echo "execute: rpm-ostree install \"${RPM_URLS}\""
-  rpm-ostree install "${RPM_URLS}";
+  echo "execute: dnf5 install -y \"${RPM_URLS}\""
+  dnf5 -y install "${RPM_URLS}";
 fi

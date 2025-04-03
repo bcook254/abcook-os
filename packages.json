@@ -4,8 +4,6 @@
             "all": [
                 "alsa-firmware",
                 "android-udev-rules",
-                "apr",
-                "apr-util",
                 "bat",
                 "btop",
                 "distrobox",
@@ -13,7 +11,6 @@
                 "ffmpeg-libs",
                 "ffmpegthumbnailer",
                 "flatpak-spawn",
-                "fuse",
                 "fzf",
                 "git-lfs",
                 "google-noto-sans-balinese-fonts",
@@ -24,10 +21,11 @@
                 "heif-pixbuf-loader",
                 "just",
                 "libcamera",
-                "libcamera-tools",
                 "libcamera-gstreamer",
                 "libcamera-ipa",
+                "libcamera-tools",
                 "libfdk-aac",
+                "libheif",
                 "libratbag-ratbagd",
                 "libva-utils",
                 "lshw",
@@ -40,7 +38,6 @@
                 "pam_yubico",
                 "pamu2fcfg",
                 "pipewire-libs-extra",
-                "pipewire-plugin-libcamera",
                 "rbw",
                 "smartmontools",
                 "solaar-udev",
@@ -59,7 +56,6 @@
             ],
             "silverblue": [
                 "adw-gtk3-theme",
-                "gnome-epub-thumbnailer",
                 "gnome-shell-extension-appindicator",
                 "gnome-shell-extension-dash-to-dock",
                 "gnome-tweaks",
@@ -89,9 +85,7 @@
                 "gnome-shell-extension-apps-menu",
                 "gnome-shell-extension-background-logo",
                 "gnome-shell-extension-launch-new-instance",
-                "gnome-shell-extension-places-menu",
                 "gnome-shell-extension-window-list",
-                "gnome-software-rpm-ostree",
                 "gnome-system-monitor",
                 "gnome-tour",
                 "totem-video-thumbnailer"
@@ -99,6 +93,14 @@
         }
     },
     "41": {
+        "include": {
+            "all": []
+        },
+        "exclude": {
+            "all": []
+        }
+    },
+    "42": {
         "include": {
             "all": []
         },
