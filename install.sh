@@ -19,40 +19,34 @@ esac
 
 # mitigate upstream packaging bug: https://bugzilla.redhat.com/show_bug.cgi?id=2332429
 # swap the incorrectly installed OpenCL-ICD-Loader for ocl-icd, the expected package
-rpm-ostree override replace \
-  --from repo='fedora' \
-  --experimental \
-  --remove=OpenCL-ICD-Loader \
-  ocl-icd \
-  || true
+dnf5 swap -y --repo='fedora' \
+    OpenCL-ICD-Loader ocl-icd
 
+dnf5 -y copr enable ublue-os/packages
+dnf5 -y copr enable ublue-os/staging
 
-curl -Lo /etc/yum.repos.d/_copr_ublue-os_staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${RELEASE}"/ublue-os-staging-fedora-"${RELEASE}".repo
-curl -Lo /etc/yum.repos.d/_copr_ublue-os_packages.repo https://copr.fedorainfracloud.org/coprs/ublue-os/packages/repo/fedora-"${RELEASE}"/ublue-os-packages-fedora-"${RELEASE}".repo
-
-rpm-ostree install \
+dnf5 install -y \
     ublue-os-just \
     ublue-os-luks \
     ublue-os-signing \
     ublue-os-udev-rules \
     ublue-os-update-services \
-    /tmp/akmods-rpms/*.rpm \
     fedora-repos-archive
 
 # use negativo17 for 3rd party packages with higher priority than default
-curl -Lo /etc/yum.repos.d/negativo17-fedora-multimedia.repo https://negativo17.org/repos/fedora-multimedia.repo
-sed -i '0,/enabled=1/{s/enabled=1/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
+dnf5 config-manager addrepo --from-repofile="https://negativo17.org/repos/fedora-multimedia.repo"
+dnf5 config-manager setopt fedora-multimedia.priority=90
+# openjph rpm missing
+dnf5 config-manager setopt fedora-multimedia.excludepkgs='*openjph*'
 
 # use override to replace mesa and others with less crippled versions
 fedora_multimedia_packages=(
-    'libheif'
     'libva'
     'mesa-dri-drivers'
     'mesa-filesystem'
     'mesa-libEGL'
     'mesa-libGL'
     'mesa-libgbm'
-    'mesa-libxatracker'
     'mesa-va-drivers'
     'mesa-vulkan-drivers'
 )
@@ -60,27 +54,29 @@ if [[ "$ARCH" == "x86_64" ]]; then
     fedora_multimedia_packages+=( 'libva-intel-media-driver' )
 fi
 
-rpm-ostree override replace \
-    --experimental \
-    --from repo='fedora-multimedia' ${fedora_multimedia_packages[@]}
+dnf5 distro-sync -y --repo='fedora-multimedia' "${fedora_multimedia_packages[@]}"
+dnf5 versionlock add "${fedora_multimedia_packages[@]}"
 
 # Disable DKMS support in gnome-software
-if [[ "$FEDORA_MAJOR_VERSION" -ge "41" && "$IMAGE_NAME" == "silverblue" ]]; then
-    rpm-ostree override remove \
+if [[ "$IMAGE_NAME" == "silverblue" ]]; then
+    dnf5 remove -y \
         gnome-software-rpm-ostree
-    rpm-ostree override replace \
-        --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-        gnome-software
+    dnf5 swap -y \
+        --repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+        gnome-software gnome-software
+    dnf5 versionlock add gnome-software
 fi
 
-# Setup packages
+# Install packages
 /ctx/packages.sh /ctx/packages.json /ctx/packages.${ARCH}.json
 
 # Install packages directly from GitHub
-/ctx/github-release-install.sh --repository=sigstore/cosign --asset-filter=${ARCH}
-/ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=${ARCH}
-/ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=${ARCH}
+/ctx/github-release-install.sh --repository=sigstore/cosign --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+/ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+/ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=${ARCH} --download-only --output-dir=/tmp/github-rpms
+
+dnf5 install -y \
+    /tmp/github-rpms/*.rpm
 
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
@@ -120,14 +116,9 @@ curl --output-dir /usr/share/fonts/meslolgs-nf -sLo "MesloLGS-NF-Italic.ttf" htt
 curl --output-dir /usr/share/fonts/meslolgs-nf -sLo "MesloLGS-NF-Bold-Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 fc-cache --system-only --really-force --verbose
 
-# copy any shared sys files
-if [[ -d /ctx/"${IMAGE_VARIANT}"/system_files/shared ]]; then
-    rsync -rvK /ctx/"${IMAGE_VARIANT}"/system_files/shared/ /
-fi
-
-# copy any spin specific files, eg silverblue
-if [[ -d "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}" ]]; then
-    rsync -rvK "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}"/ /
+# run any install scripts for image variants
+if [ -f "/ctx/${IMAGE_VARIANT}/install.sh" ]; then
+    "/ctx/${IMAGE_VARIANT}/install.sh"
 fi
 
 # install any packages from packages.json
