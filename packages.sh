@@ -24,11 +24,11 @@ if [[ "${#INCLUDED_PACKAGES[@]}" -gt 0 && "${#EXCLUDED_PACKAGES[@]}" -eq 0 ]]; t
         ${INCLUDED_PACKAGES[@]}
 
 elif [[ "${#INCLUDED_PACKAGES[@]}" -eq 0 && "${#EXCLUDED_PACKAGES[@]}" -gt 0 ]]; then
-    dnf5 remove -y \
+    rpm -e --nodeps \
         ${EXCLUDED_PACKAGES[@]}
 
 elif [[ "${#INCLUDED_PACKAGES[@]}" -gt 0 && "${#EXCLUDED_PACKAGES[@]}" -gt 0 ]]; then
-    dnf5 remove -y \
+    rpm -e --nodeps \
         ${EXCLUDED_PACKAGES[@]}
     dnf5 install -y \
         ${INCLUDED_PACKAGES[@]}
@@ -50,6 +50,6 @@ fi
 
 # remove any excluded packages which are still present on image
 if [[ "${#EXCLUDED_PACKAGES[@]}" -gt 0 ]]; then
-    dnf5 remove -y \
+    rpm -e --nodeps \
         ${EXCLUDED_PACKAGES[@]}
 fi
