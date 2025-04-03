@@ -36,8 +36,6 @@ dnf5 install -y \
 # use negativo17 for 3rd party packages with higher priority than default
 dnf5 config-manager addrepo --from-repofile="https://negativo17.org/repos/fedora-multimedia.repo"
 dnf5 config-manager setopt fedora-multimedia.priority=90
-# openjph rpm missing
-dnf5 config-manager setopt fedora-multimedia.excludepkgs='*openjph*'
 
 # use override to replace mesa and others with less crippled versions
 fedora_multimedia_packages=(
