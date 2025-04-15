@@ -311,7 +311,7 @@ jobs:
             final_manifests[manifest_final] = manifest_images_final
 
             # add case for 'latest' tag
-            if str(manifest["major_version"]) == "41":
+            if str(manifest["major_version"]) == "42":
               manifest_final = f'{manifest["image_name"]}-{manifest["image_variant"]}:latest'
               final_manifests[manifest_final] = manifest_images_final
 
