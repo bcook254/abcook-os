@@ -29,7 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-24.04, ubuntu-24.04-arm ]
-        major_version: [41, 42]
+        major_version: [42, 43]
         image_name: [silverblue]
         image_variant: [main, surface]
         exclude:
@@ -37,7 +37,7 @@ jobs:
           - os: ubuntu-24.04-arm
             image_variant: surface
           - image_variant: surface
-            major_version: 42
+            major_version: 43
     env:
       IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.image_variant }}
     steps:
@@ -250,8 +250,8 @@ jobs:
             - main
             - surface
           major_version:
-            - 41
             - 42
+            - 43
           image_arch:
             - x86_64
             - aarch64
@@ -263,7 +263,7 @@ jobs:
           - image_arch: aarch64
             image_variant: surface
           - image_variant: surface
-            major_version: 42
+            major_version: 43
           """
           image_exclusions_dict = yaml.safe_load(image_exclusions_def)
 
@@ -287,8 +287,8 @@ jobs:
             - main
             - surface
           major_version:
-            - 41
             - 42
+            - 43
           """
           manifests_dict = yaml.safe_load(manifests_def)
 
