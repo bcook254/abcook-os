@@ -2,7 +2,7 @@
 
 set -oeux pipefail
 
-RELEASE="$(rpm -E %fedora)"
+FRELEASE="$(rpm -E %fedora)"
 ARCH="$(uname -m)"
 case $ARCH in
   
