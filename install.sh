@@ -68,7 +68,10 @@ fi
 # Remove Fedora Flatpak and related packages
 dnf5 remove -y \
     fedora-flathub-remote \
-    fedora-third-party
+
+# fedora-third-party has a trojan horse via plasma-discover requiring it in its spec, replace it with a dummy package.
+dnf5 swap -y \
+    fedora-third-party ublue-os-flatpak
 
 # Add Flathub to the image for eventual application
 mkdir -p /etc/flatpak/remotes.d/
