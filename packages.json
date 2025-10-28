@@ -3,7 +3,6 @@
         "include": {
             "all": [
                 "alsa-firmware",
-                "android-udev-rules",
                 "bat",
                 "btop",
                 "distrobox",
