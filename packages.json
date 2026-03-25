@@ -67,6 +67,7 @@
             "all": [
                 "default-fonts-cjk-sans",
                 "fdk-aac-free",
+                "fedora-third-party",
                 "ffmpeg-free",
                 "firefox",
                 "firefox-langpacks",
