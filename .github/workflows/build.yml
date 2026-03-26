@@ -266,6 +266,7 @@ jobs:
           major_version:
             - 42
             - 43
+            - 44
           """
           manifests_dict = yaml.safe_load(manifests_def)
 

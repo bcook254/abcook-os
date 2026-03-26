@@ -52,7 +52,7 @@ if [[ "$ARCH" == "x86_64" ]]; then
     fedora_multimedia_packages+=( 'libva-intel-media-driver' )
 fi
 
-dnf5 distro-sync -y --repo='fedora-multimedia' "${fedora_multimedia_packages[@]}"
+dnf5 distro-sync --skip-unavailable -y --repo='fedora-multimedia' "${fedora_multimedia_packages[@]}"
 dnf5 versionlock add "${fedora_multimedia_packages[@]}"
 
 # Disable DKMS support in gnome-software
