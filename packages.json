@@ -110,5 +110,16 @@
         "exclude": {
             "all": []
         }
+    },
+    "44": {
+        "include": {
+            "all": [
+                "fuse",
+                "fuse-libs"
+            ]
+        },
+        "exclude": {
+            "all": []
+        }
     }
 }
