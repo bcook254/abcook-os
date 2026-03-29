@@ -22,13 +22,5 @@
         "exclude": {
             "all": []
         }
-    },
-    "44": {
-        "include": {
-            "all": []
-        },
-        "exclude": {
-            "all": []
-        }
     }
 }
