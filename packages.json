@@ -44,7 +44,6 @@
                 "squashfs-tools",
                 "symlinks",
                 "tcpdump",
-                "tealdeer",
                 "tmux",
                 "traceroute",
                 "usbmuxd",
@@ -98,7 +97,9 @@
     },
     "43": {
         "include": {
-            "all": []
+            "all": [
+                "tealdeer"
+            ]
         },
         "exclude": {
             "all": []
@@ -106,7 +107,9 @@
     },
     "44": {
         "include": {
-            "all": []
+            "all": [
+                "tealdeer"
+            ]
         },
         "exclude": {
             "all": []
