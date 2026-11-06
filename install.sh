@@ -88,8 +88,12 @@ dnf5 install -y \
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
 GCM_VERSION=3.0.2
+GCM_ARCH="${ARCH_ALT}"
+if [[ "$GCM_ARCH" == "amd64" ]]; then
+    GCM_ARCH="x64"
+fi
 mkdir /tmp/gcm
-curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_${ARCH_ALT}.${GCM_VERSION}.tar.gz
+curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux-${GCM_ARCH}-${GCM_VERSION}.tar.gz
 tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
 mkdir /usr/lib/gcm
 cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
