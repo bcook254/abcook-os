@@ -51,6 +51,7 @@
                 "vim",
                 "wireguard-tools",
                 "wl-clipboard",
+                "xdg-terminal-exec",
                 "yubikey-manager",
                 "zsh",
                 "zstd"
@@ -65,13 +66,11 @@
         },
         "exclude": {
             "all": [
-                "default-fonts-cjk-sans",
                 "fdk-aac-free",
                 "fedora-third-party",
                 "ffmpeg-free",
                 "firefox",
                 "firefox-langpacks",
-                "google-noto-sans-cjk-vf-fonts",
                 "libavcodec-free",
                 "libavdevice-free",
                 "libavfilter-free",
@@ -89,6 +88,8 @@
                 "gnome-shell-extension-launch-new-instance",
                 "gnome-shell-extension-places-menu",
                 "gnome-shell-extension-window-list",
+                "gnome-software",
+                "gnome-software-rpm-ostree",
                 "gnome-system-monitor",
                 "gnome-tour",
                 "totem-video-thumbnailer"
@@ -104,6 +105,14 @@
         }
     },
     "44": {
+        "include": {
+            "all": []
+        },
+        "exclude": {
+            "all": []
+        }
+    },
+    "45": {
         "include": {
             "all": []
         },
