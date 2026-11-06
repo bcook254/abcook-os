@@ -4,9 +4,6 @@ set -oeux pipefail
 
 dnf5 versionlock clear
 
-# Workaround: Rename just's CN readme to README.zh-cn.md 
-mv '/usr/share/doc/just/README.中文.md' '/usr/share/doc/just/README.zh-cn.md'
-
 # Alternatives cannot create symlinks on its own during a container build
 ln -sf /usr/bin/step-cli /etc/alternatives/step && ln -sf /etc/alternatives/step /usr/bin/step
 
@@ -20,7 +17,9 @@ ln -sf /usr/lib/gcm/git-credential-manager /usr/bin/git-credential-manager
 /usr/bin/step-cli completion zsh > /usr/share/zsh/site-functions/_step
 
 # Fix cjk fonts
-ln -s "/usr/share/fonts/google-noto-sans-cjk-fonts" "/usr/share/fonts/noto-cjk" 
+if [[ "$(rpm -E %fedora)" -le 44 ]]; then
+    ln -s "/usr/share/fonts/google-noto-sans-cjk-fonts" "/usr/share/fonts/noto-cjk" 
+fi
 
 # Enable Update Timers
 systemctl enable rpm-ostreed-automatic.timer

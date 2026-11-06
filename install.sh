@@ -29,7 +29,6 @@ dnf5 install -y \
     ublue-os-just \
     ublue-os-luks \
     ublue-os-signing \
-    ublue-os-udev-rules \
     ublue-os-update-services \
     fedora-repos-archive
 
@@ -88,20 +87,17 @@ dnf5 install -y \
 
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
-# no aarch64 support for gcm
-if [[ "$ARCH" == "x86_64" ]]; then
-    GCM_VERSION=2.6.1
-    mkdir /tmp/gcm
-    curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_${ARCH_ALT}.${GCM_VERSION}.tar.gz
-    tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
-    mkdir /usr/lib/gcm
-    cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
-fi
+GCM_VERSION=3.0.2
+mkdir /tmp/gcm
+curl -sLo /tmp/gcm/gcm-linux.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_${ARCH_ALT}.${GCM_VERSION}.tar.gz
+tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux.tar.gz
+mkdir /usr/lib/gcm
+cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
 
 # Install eza
 # https://github.com/eza-community/eza
 # official package falls behind quickly with rapid development and dep changes
-EZA_VERSION="0.20.24"
+EZA_VERSION="0.23.5"
 EZA_TMPDIR=$(mktemp --directory /tmp/eza-XXXXXXXX)
 curl -Lo ${EZA_TMPDIR}/eza.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/eza_${ARCH}-unknown-linux-gnu.tar.gz
 curl -Lo ${EZA_TMPDIR}/man.tar.gz https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/man-${EZA_VERSION}.tar.gz
